@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// import type { AnnotationEditorFactory, DiamClientFactory } from "@inception-project/inception-diam"
+import type { AnnotationEditorFactory, AnnotationEditorProperties, DiamClientFactory } from "@inception-project/inception-js-api"
 import { RecogitoEditor } from "./RecogitoEditor"
 
 const PROP_EDITOR = "__editor__";
 
-export class RecogitoEditorFactory /* implements AnnotationEditorFactory */ {
-  public async getOrInitialize(element: HTMLElement | string, diam /*: DiamClientFactory */, props /*: AnnotationEditorProperties */): Promise<RecogitoEditor> {
+export class RecogitoEditorFactory implements AnnotationEditorFactory {
+  public async getOrInitialize(element: HTMLElement | string, diam : DiamClientFactory, props: AnnotationEditorProperties): Promise<RecogitoEditor> {
     if (!(element instanceof HTMLElement)) {
       element = document.getElementById(element)
     }

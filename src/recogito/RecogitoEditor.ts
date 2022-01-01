@@ -17,15 +17,15 @@
  */
 import '@recogito/recogito-js/dist/recogito.min.css'
 import { Recogito } from '@recogito/recogito-js';
-// import type { AnnotationEditor, DiamAjax } from "@inception-project/inception-diam";
+import type { AnnotationEditor, DiamAjax } from "@inception-project/inception-js-api";
 
 const ANNOTATIONS_SERIALIZER = "WebAnnotation";
 
-export class RecogitoEditor /* implements AnnotationEditor */ {
-  private ajax /* : DiamAjax */;
+export class RecogitoEditor implements AnnotationEditor {
+  private ajax: DiamAjax;
   private recogito: typeof Recogito;
 
-  public constructor(element: HTMLElement, ajax /* : DiamAjax */) {
+  public constructor(element: HTMLElement, ajax: DiamAjax) {
     this.ajax = ajax;
 
     this.recogito = new Recogito({
