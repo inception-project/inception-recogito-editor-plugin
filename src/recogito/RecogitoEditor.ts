@@ -36,6 +36,8 @@ export class RecogitoEditor /* implements AnnotationEditor */ {
 
     this.recogito.on('createAnnotation', annotation => this.createAnnotation(annotation));
     this.recogito.on('selectAnnotation', annotation => this.selectAnnotation(annotation));
+
+    this.loadAnnotations();
   }
 
   public loadAnnotations(): void {

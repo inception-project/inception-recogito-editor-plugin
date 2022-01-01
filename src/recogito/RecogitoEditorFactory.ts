@@ -18,21 +18,22 @@
 // import type { AnnotationEditorFactory, DiamClientFactory } from "@inception-project/inception-diam"
 import { RecogitoEditor } from "./RecogitoEditor"
 
+const PROP_EDITOR = "__editor__";
+
 export class RecogitoEditorFactory /* implements AnnotationEditorFactory */ {
-  public async getOrInitialize(element: HTMLElement | string, diam /* : DiamClientFactory */, callbackUrl: string): RecogitoEditor {
+  public async getOrInitialize(element: HTMLElement | string, diam /*: DiamClientFactory */, props /*: AnnotationEditorProperties */): Promise<RecogitoEditor> {
     if (!(element instanceof HTMLElement)) {
       element = document.getElementById(element)
     }
 
-    if (element['recogito'] != null) {
-      return element['recogito'];
+    if (element[PROP_EDITOR] != null) {
+      return element[PROP_EDITOR];
     }
 
-    const iframe = element as HTMLIFrameElement;
-    element['recogito'] = await this.copyRecogitoCssToIFrame(iframe)
-      .then(() => this.initRecogito(iframe, diam.createAjaxClient(callbackUrl)));
-    element['recogito'].loadAnnotations();
-    return element['recogito'];
+    const ajax = diam.createAjaxClient(props.diamAjaxCallbackUrl);
+    const bodyElement = document.getElementsByTagName("body")[0];
+    element[PROP_EDITOR] = new RecogitoEditor(bodyElement, ajax);
+    return element[PROP_EDITOR];
   }
 
   public destroy(element: HTMLElement | string) {
@@ -40,37 +41,9 @@ export class RecogitoEditorFactory /* implements AnnotationEditorFactory */ {
       element = document.getElementById(element)
     }
 
-    if (element['recogito'] != null) {
-      element['recogito'].destroy();
+    if (element[PROP_EDITOR] != null) {
+      element[PROP_EDITOR].destroy();
       console.log('Destroyed RecogitoJS');
     }
-  }
-
-  private initRecogito(iframe: HTMLIFrameElement, ajax /* : DiamAjax */): Promise<RecogitoEditor> {
-    return new Promise(resolve => {
-      const iframeBody = iframe.contentDocument.getElementsByTagName("body")[0];
-      const instance: RecogitoEditor = new RecogitoEditor(iframeBody, ajax);
-      resolve(instance);
-    });
-  }
-
-  private copyRecogitoCssToIFrame(iframe: HTMLIFrameElement): Promise<void> {
-    return new Promise(resolve => {
-      iframe.addEventListener('load', () => {
-        var recogitoCssLink: HTMLLinkElement;
-        document.querySelectorAll('[rel="stylesheet"][type="text/css"]').forEach(e => {
-          const cssLink = e as HTMLLinkElement;
-          if (cssLink.href.endsWith("/RecogitoEditor.css")) {
-            recogitoCssLink = cssLink;
-          }
-        })
-    
-        const iframeRecogitoCssLink = recogitoCssLink.cloneNode() as HTMLLinkElement;
-        iframeRecogitoCssLink.href = (new URL(iframeRecogitoCssLink.href, document.location.href)).href;
-        iframeRecogitoCssLink.onload = () => resolve();
-        const iframeHead = iframe.contentDocument.getElementsByTagName("head")[0];
-        iframeHead.append(iframeRecogitoCssLink);
-      });
-    });
   }
 }

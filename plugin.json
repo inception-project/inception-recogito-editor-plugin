@@ -1,8 +1,8 @@
 {
   "name": "RecogitoJS (external)",
   "factory": "RecogitoEditor",
-  "js": "dist/RecogitoEditor.min.js",
-  "css": "dist/RecogitoEditor.min.css",
+  "scripts": [ "dist/RecogitoEditor.js" ],
+  "stylesheets": [ "dist/RecogitoEditor.css" ],
   "annotationFormat": "WebAnnotation",
   "view": "iframe:cas+html"
 }
