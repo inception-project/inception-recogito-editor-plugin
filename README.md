@@ -14,7 +14,7 @@ $ mkdir editors
 $ git clone https://github.com/inception-project/inception-recogito-editor-plugin.git
 ```
 
-Finally, start INCEpTION. Early during start-up, you should like this:
+Finally, start INCEpTION. Early during start-up, you should see a message like this:
 
 ```
 ExternalEditorLoader - Loading editor plugin: RecogitoJS (external)
