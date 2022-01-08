@@ -17,9 +17,32 @@
  */
 import '@recogito/recogito-js/dist/recogito.min.css'
 import { Recogito } from '@recogito/recogito-js';
-import type { AnnotationEditor, DiamAjax } from "@inception-project/inception-js-api";
+import type { AnnotationEditor, CompactAnnotatedText, DiamAjax } from "@inception-project/inception-js-api";
 
-const ANNOTATIONS_SERIALIZER = "WebAnnotation";
+const ANNOTATIONS_SERIALIZER = "compact";
+
+interface WebAnnotation {
+  id: string;
+  type: string;
+  motivation?: string;
+  target: WebAnnotationTarget;
+  body: Array<WebAnnotationBodyItem>;
+}
+
+interface WebAnnotationBodyItem {
+  type: string;
+  value: string;
+  purpose: string;
+}
+
+interface WebAnnotationTarget {
+  selector: WebAnnotationTextPositionSelector;
+}
+
+interface WebAnnotationTextPositionSelector {
+  start: number;
+  end: number;
+}
 
 export class RecogitoEditor implements AnnotationEditor {
   private ajax: DiamAjax;
@@ -41,16 +64,32 @@ export class RecogitoEditor implements AnnotationEditor {
   }
 
   public loadAnnotations(): void {
-    this.ajax.loadAnnotations(ANNOTATIONS_SERIALIZER)
-      .then(a => {
-        console.log("Loaded " + a.length + " annotations from server");
-        if (!this.recogito) {
-          console.error("No recogito instance found on this", this);
-        }
-        else {
-          this.recogito.setAnnotations(a)
-        }
-      });
+    this.ajax.loadAnnotations(ANNOTATIONS_SERIALIZER).then((doc: CompactAnnotatedText) => {
+      if (!this.recogito) {
+        console.error("No recogito instance found on this", this);
+        return;
+      }
+
+      console.log("Loaded annotations from server");
+      const webAnnotations: Array<WebAnnotation> = [];
+      if (doc.spans) {
+        webAnnotations.push(...doc.spans.map(span => {
+          return {
+            id: '#' + span[0],
+            type: 'Annotation',
+            target: {
+              selector: { type: "TextPositionSelector", start: span[2][0][0], end: span[2][0][1] }
+            },
+            body: [{
+              type: 'TextualBody',
+              purpose: 'tagging',
+              value: span[3].l || ""
+            }]
+          }
+        }));
+      }
+      this.recogito.setAnnotations(webAnnotations);
+    });
   }
 
   public destroy(): void {
