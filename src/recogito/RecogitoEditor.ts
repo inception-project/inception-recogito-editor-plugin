@@ -17,7 +17,9 @@
  */
 import '@recogito/recogito-js/dist/recogito.min.css'
 import { Recogito } from '@recogito/recogito-js';
-import type { AnnotationEditor, CompactAnnotatedText, DiamAjax } from "@inception-project/inception-js-api";
+import type { AnnotationEditor, CompactAnnotatedText, CompactSpan, DiamAjax } from "@inception-project/inception-js-api";
+import { CompactRelation } from '@inception-project/inception-js-api/src/model/compact/CompactRelation';
+import "./RecogitoEditor.css"
 
 const ANNOTATIONS_SERIALIZER = "compact";
 
@@ -25,7 +27,7 @@ interface WebAnnotation {
   id: string;
   type: string;
   motivation?: string;
-  target: WebAnnotationTarget;
+  target: WebAnnotationTextPositionSelector | Array<WebAnnotationAnnotationTarget>;
   body: Array<WebAnnotationBodyItem>;
 }
 
@@ -35,13 +37,15 @@ interface WebAnnotationBodyItem {
   purpose: string;
 }
 
-interface WebAnnotationTarget {
-  selector: WebAnnotationTextPositionSelector;
+interface WebAnnotationAnnotationTarget {
+  id: string;
 }
 
 interface WebAnnotationTextPositionSelector {
-  start: number;
-  end: number;
+  selector: {
+    start: number;
+    end: number;
+  }
 }
 
 export class RecogitoEditor implements AnnotationEditor {
@@ -70,26 +74,55 @@ export class RecogitoEditor implements AnnotationEditor {
         return;
       }
 
-      console.log("Loaded annotations from server");
       const webAnnotations: Array<WebAnnotation> = [];
+
       if (doc.spans) {
-        webAnnotations.push(...doc.spans.map(span => {
-          return {
-            id: '#' + span[0],
-            type: 'Annotation',
-            target: {
-              selector: { type: "TextPositionSelector", start: span[2][0][0], end: span[2][0][1] }
-            },
-            body: [{
-              type: 'TextualBody',
-              purpose: 'tagging',
-              value: span[3].l || ""
-            }]
-          }
-        }));
+        webAnnotations.push(...this.compactSpansToWebAnnotation(doc.spans));
       }
+
+      if (doc.relations) {
+        webAnnotations.push(...this.compactRelationsToWebAnnotation(doc.relations));
+      }
+
+      console.info(`Loaded ${webAnnotations.length} annotations from server`);
       this.recogito.setAnnotations(webAnnotations);
     });
+  }
+
+  private compactSpansToWebAnnotation(spans: Array<CompactSpan>): Array<WebAnnotation> {
+    return spans.map(span => {
+      return {
+        id: '#' + span[0],
+        type: 'Annotation',
+        body: [{
+          type: 'TextualBody',
+          purpose: 'tagging',
+          value: span[2].l || ""
+        }],
+        target: {
+          selector: { type: "TextPositionSelector", start: span[1][0][0], end: span[1][0][1] }
+        }
+      }
+    })
+  }
+
+  private compactRelationsToWebAnnotation(relations: Array<CompactRelation>): Array<WebAnnotation> {
+    return relations.map(relation => {
+      return {
+        id: '#' + relation[0],
+        type: 'Annotation',
+        body: [{
+          type: 'TextualBody',
+          purpose: 'tagging',
+          value: relation[2].l || ""
+        }],
+        motivation: 'linking',
+        target: [
+          { id: '#' + relation[1][0][0] },
+          { id: '#' + relation[1][1][0] }
+        ]
+      }
+    })
   }
 
   public destroy(): void {

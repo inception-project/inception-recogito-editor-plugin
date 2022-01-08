@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "RecogitoJS annotation editor plugin",
   "scripts": {
-    "build": "esbuild src/main.ts --minify --target=es6 --bundle --sourcemap --global-name=RecogitoEditor --outfile=dist/RecogitoEditor.min.js",
-    "build-debug": "esbuild src/main.ts --target=es6 --bundle --sourcemap --global-name=RecogitoEditor --outfile=dist/RecogitoEditor.js"
+    "build": "esbuild src/main.ts --minify --target=es6 --bundle --sourcemap --global-name=RecogitoEditor --outfile=dist/RecogitoEditor.min.js"
   },
   "dependencies": {
     "@inception-project/inception-js-api": "*",
