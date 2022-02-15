@@ -21,26 +21,34 @@ import { RecogitoEditor } from "./RecogitoEditor"
 const PROP_EDITOR = "__editor__";
 
 export class RecogitoEditorFactory implements AnnotationEditorFactory {
-  public async getOrInitialize(element: HTMLElement | string, diam : DiamClientFactory, props: AnnotationEditorProperties): Promise<RecogitoEditor> {
-    if (!(element instanceof HTMLElement)) {
-      element = document.getElementById(element)
-    }
-
+  public async getOrInitialize(element: Node, diam : DiamClientFactory, props: AnnotationEditorProperties): Promise<RecogitoEditor> {
     if (element[PROP_EDITOR] != null) {
       return element[PROP_EDITOR];
     }
 
     const ajax = diam.createAjaxClient(props.diamAjaxCallbackUrl);
-    const bodyElement = document.getElementsByTagName("body")[0];
-    element[PROP_EDITOR] = new RecogitoEditor(bodyElement, ajax);
+
+    let targetElement: Element;
+    if ((element as any).querySelector) {
+      targetElement = (element as any).querySelector("[data-capture-root]");
+    }
+
+    if (!targetElement && element instanceof HTMLDocument) {
+      let bodies = element.getElementsByTagName("body");
+      if (bodies && bodies.length > 0) {
+        targetElement = bodies[0];
+      }
+    }
+
+    if (!targetElement) {
+      targetElement = element as Element;
+    }
+
+    element[PROP_EDITOR] = new RecogitoEditor(targetElement, ajax);
     return element[PROP_EDITOR];
   }
 
-  public destroy(element: HTMLElement | string) {
-    if (!(element instanceof HTMLElement)) {
-      element = document.getElementById(element)
-    }
-
+  public destroy(element: Node) {
     if (element[PROP_EDITOR] != null) {
       element[PROP_EDITOR].destroy();
       console.log('Destroyed RecogitoJS');

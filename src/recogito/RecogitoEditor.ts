@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import '@recogito/recogito-js/dist/recogito.min.css'
-import { Recogito } from '@recogito/recogito-js';
+import { Recogito } from '@recogito/recogito-js/src';
+import { default as Connections } from '@recogito/recogito-connections/src';
 import type { AnnotationEditor, CompactAnnotatedText, CompactSpan, DiamAjax } from "@inception-project/inception-js-api";
 import { CompactRelation } from '@inception-project/inception-js-api/src/model/compact/CompactRelation';
 import "./RecogitoEditor.css"
@@ -50,9 +51,10 @@ interface WebAnnotationTextPositionSelector {
 
 export class RecogitoEditor implements AnnotationEditor {
   private ajax: DiamAjax;
-  private recogito: typeof Recogito;
+  private recogito: Recogito;
+  private connections: any;
 
-  public constructor(element: HTMLElement, ajax: DiamAjax) {
+  public constructor(element: Element, ajax: DiamAjax) {
     this.ajax = ajax;
 
     this.recogito = new Recogito({
@@ -63,6 +65,21 @@ export class RecogitoEditor implements AnnotationEditor {
 
     this.recogito.on('createAnnotation', annotation => this.createAnnotation(annotation));
     this.recogito.on('selectAnnotation', annotation => this.selectAnnotation(annotation));
+
+    /* 
+    this.connections = Connections(this.recogito);
+    this.connections.on('createConnection', function(c) {
+      console.log('created', c);
+    });
+    
+    this.connections.on('updateConnection', function(updated, previous) {
+      console.log('updated', updated, previous);
+    });
+  
+    this.connections.on('deleteConnection', function(c) {
+      console.log('deleted', c);
+    });
+    */
 
     this.loadAnnotations();
   }
@@ -126,6 +143,7 @@ export class RecogitoEditor implements AnnotationEditor {
   }
 
   public destroy(): void {
+    // this.connections.destroy();
     this.recogito.destroy();
   }
 

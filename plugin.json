@@ -3,5 +3,5 @@
   "factory": "RecogitoEditor.factory()",
   "scripts": [ "dist/RecogitoEditor.min.js" ],
   "stylesheets": [ "dist/RecogitoEditor.min.css" ],
-  "view": "iframe:cas+html"
+  "view": "iframe:cas+xhtml+xml"
 }
