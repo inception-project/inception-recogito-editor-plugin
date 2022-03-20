@@ -8,8 +8,7 @@
   "dependencies": {
     "@inception-project/inception-js-api": "*",
     "@recogito/recogito-js": "^1.6.0",
-    "@recogito/recogito-client-core": "1.6.0",
-    "@recogito/recogito-connections": "^0.1.2"
+    "@recogito/recogito-client-core": "1.6.0"
   },
   "devDependencies": {
     "esbuild": "^0.13.12",

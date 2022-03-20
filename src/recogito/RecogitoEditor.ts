@@ -17,7 +17,6 @@
  */
 import '@recogito/recogito-js/dist/recogito.min.css'
 import { Recogito } from '@recogito/recogito-js/src';
-import { default as Connections } from '@recogito/recogito-connections/src';
 import type { AnnotationEditor, CompactAnnotatedText, CompactSpan, DiamAjax } from "@inception-project/inception-js-api";
 import { CompactRelation } from '@inception-project/inception-js-api/src/model/compact/CompactRelation';
 import "./RecogitoEditor.css"
@@ -87,7 +86,7 @@ export class RecogitoEditor implements AnnotationEditor {
   public loadAnnotations(): void {
     this.ajax.loadAnnotations(ANNOTATIONS_SERIALIZER).then((doc: CompactAnnotatedText) => {
       if (!this.recogito) {
-        console.error("No recogito instance found on this", this);
+        console.error("It seems RecogitoJS has not yet been initialized", this);
         return;
       }
 

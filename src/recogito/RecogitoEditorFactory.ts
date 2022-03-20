@@ -21,7 +21,7 @@ import { RecogitoEditor } from "./RecogitoEditor"
 const PROP_EDITOR = "__editor__";
 
 export class RecogitoEditorFactory implements AnnotationEditorFactory {
-  public async getOrInitialize(element: Node, diam : DiamClientFactory, props: AnnotationEditorProperties): Promise<RecogitoEditor> {
+  public async getOrInitialize(element: Node, diam: DiamClientFactory, props: AnnotationEditorProperties): Promise<RecogitoEditor> {
     if (element[PROP_EDITOR] != null) {
       return element[PROP_EDITOR];
     }
