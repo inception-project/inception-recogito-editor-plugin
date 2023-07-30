@@ -224,7 +224,7 @@ export class RecogitoEditor implements AnnotationEditor {
       const classList = ['i7n-highlighted']
       const ms = annotationMarkers.get(span[0]) || []
       ms.forEach(m => classList.push(`i7n-marker-${m[0]}`))
-  
+
       return {
         id: '#' + span[0],
         type: 'Annotation',
@@ -245,7 +245,6 @@ export class RecogitoEditor implements AnnotationEditor {
   private compactRelationsToWebAnnotation (doc: CompactAnnotatedText, annotationMarkers: Map<VID, Array<CompactAnnotationMarker>>): Array<WebAnnotation> {
     const relations = doc.relations as Array<CompactRelation>
     return relations.map(relation => {
-
       const classList = ['i7n-highlighted']
       const ms = annotationMarkers.get(relation[0]) || []
       ms.forEach(m => classList.push(`i7n-marker-${m[0]}`))
